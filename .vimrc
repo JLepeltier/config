@@ -21,3 +21,5 @@ set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
 
 " json syntax
 autocmd BufNewFile,BufRead *.json set ft=javascript
+
+filetype indent plugin on
