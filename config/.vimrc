@@ -4,6 +4,7 @@ set noai
 set nocompatible
 set hlsearch
 set background=dark
+set mouse=v
 
 " color
 syntax on

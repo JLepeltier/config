@@ -1,7 +1,7 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
-export LANGUAGE=English
+
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
@@ -72,16 +72,18 @@ if [ -x /usr/bin/dircolors ]; then
     #alias dir='dir --color=auto'
     #alias vdir='vdir --color=auto'
 
-    #alias grep='grep --color=auto'
+    alias grep='grep --color=auto'
     #alias fgrep='fgrep --color=auto'
     #alias egrep='egrep --color=auto'
 fi
 
 # some more ls aliases
-#alias ll='ls -l'
-#alias la='ls -A'
-#alias l='ls -CF'
+alias ll='ls -lh'
+alias la='ls -lah'
+alias l='ls -CF'
 alias ag='ack-grep'
+alias gateprod='ssh sshgate@indus.nrj.fr'
+alias gatemini='ssh sshgate@indus.nrjms.fr'
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
@@ -143,7 +145,7 @@ prompt() {
                 PS1=$LEFTPROMPT"\[$NoColor\] "$RootPrompt" "
         fi
 
-        # echo -e -n $LEFTPROMPT        
+        # echo -e -n $LEFTPROMPT
 }
 
 # Define PROMPT_COMMAND if not already defined (fix: Modifying title on SSH connections)
@@ -157,14 +159,66 @@ if [ -z "$PROMPT_COMMAND" ]; then
         ;;
         esac
 fi
- 
+
 # Main prompt
 PROMPT_COMMAND="prompt;$PROMPT_COMMAND"
- 
+
 if [ $EUID -ne 0 ]; then
         PS1=$NonRootPrompt" "
 else
         PS1=$RootPrompt" "
 fi
 
-export PATH="$PATH:$HOME/.composer/vendor/bin"
+export EDITOR=vim
+
+# Note: ~/.ssh/environment should not be used, as it
+#       already has a different purpose in SSH.
+
+env=~/.ssh/agent.env
+
+# Note: Don't bother checking SSH_AGENT_PID. It's not used
+#       by SSH itself, and it might even be incorrect
+#       (for example, when using agent-forwarding over SSH).
+
+agent_is_running() {
+    if [ "$SSH_AUTH_SOCK" ]; then
+        # ssh-add returns:
+        #   0 = agent running, has keys
+        #   1 = agent running, no keys
+        #   2 = agent not running
+        ssh-add -l >/dev/null 2>&1 || [ $? -eq 1 ]
+    else
+        false
+    fi
+}
+
+agent_has_keys() {
+    ssh-add -l >/dev/null 2>&1
+}
+
+agent_load_env() {
+    . "$env" >/dev/null
+}
+
+agent_start() {
+    (umask 077; ssh-agent >"$env")
+    . "$env" >/dev/null
+}
+
+if ! agent_is_running; then
+    agent_load_env
+fi
+
+# if your keys are not stored in ~/.ssh/id_rsa or ~/.ssh/id_dsa, you'll need
+# to paste the proper path after ssh-add
+if ! agent_is_running; then
+    agent_start
+    ssh-add
+elif ! agent_has_keys; then
+    ssh-add
+fi
+
+unset env
+
+export COMPOSE_API_VERSION=1.37
+export XDEBUG_CONFIG="idekey=PHPSTORM"

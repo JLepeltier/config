@@ -1,0 +1,5 @@
+.idea
+var
+config/.gitconfig.user
+run_extra.sh
+/.env

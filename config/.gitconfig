@@ -17,8 +17,9 @@
 	ci = commit
 	pu = push
 	br = branch
-[user]
-	name = Jérôme LEPELTIER
-	email = jeromel@bookeen.com
 [core]
 	editor = vim
+	fileMode = false
+	autocrlf = false
+[include]
+    path = .gitconfig.user
