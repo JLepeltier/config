@@ -1,17 +1,19 @@
 function composer() {
-  docker-compose exec --user $USER web composer --working-dir=$PWD "$@"
+  docker-compose exec --user $USER php composer --working-dir=$PWD "$@"
 }
 
 alias dc="docker-compose"
 alias brunch="docker-compose exec --user $USER web brunch"
 alias npx="docker-compose exec --user $USER web npx"
 alias npm="docker-compose exec --user $USER web npm"
-alias yarn="docker-compose exec --user $UID:`id -g $USER` web yarn"
+alias yarn="docker-compose exec --user $UID:`id -g $USER` php yarn"
 alias node="docker-compose exec --user $UID:`id -g $USER` web node"
 alias mongo="docker-compose --file ~/vm_config/docker-compose.yml  exec mongo mongo"
-alias redis-cli="docker-compose --file ~/vm_config/docker-compose.yml  exec redis redis-cli"
+alias redis-cli="docker-compose --file ~/config/docker-compose.yml  exec redis redis-cli"
 alias mysql="docker-compose --file ~/vm_config/docker-compose.yml exec -T mysql mysql"
 alias fix='bin/web-cs-fixer fix'
+
+alias staging='git co staging ; git reset --hard `git name-rev $(git rev-parse @{-1}) --name-only`; git push -f origin staging; git co `git name-rev $(git rev-parse @{-1}) --name-only`'
 
 #Alexa command
 alias ask="docker-compose exec --user $USER web ask"

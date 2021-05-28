@@ -1,8 +1,6 @@
 #!/bin/bash
 
-cd /home/$USER/config/
-docker-compose stop
-docker-compose up -d
+#cd /home/$USER/config/ && docker-compose up -d -t 600 myadmin redis mongo elastic nginx
 
 ln -sf  /home/$USER/config/config/.bashrc /home/$USER/.bashrc
 ln -sf  /home/$USER/config/config/.bash_aliases /home/$USER/.bash_aliases

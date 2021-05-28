@@ -3,7 +3,7 @@ faketty () { script -eqfc "$(printf "%q " "$@")" /dev/null; }
 
 if [[  "" = ${GIT_INDEX_FILE} ]]
 then
-    faketty docker-compose exec --workdir $PWD --user $USER web php "$@"
+    faketty docker-compose exec --workdir $PWD --user $USER  php php "$@"
 else
     faketty docker-compose exec --workdir $PWD --user $USER -e GIT_INDEX_FILE=`realpath --relative-to=. $GIT_INDEX_FILE` php php "$@"
 fi

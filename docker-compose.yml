@@ -2,6 +2,7 @@ version: '3.5'
 
 services:
     nginx:
+        restart: always
         build: ./docker/nginx
         ports:
             - "443:443"
@@ -16,6 +17,7 @@ services:
             - common
             - lunchtime
     redis:
+        restart: always
         image: redis:3.2.4-alpine
         ports:
             - 6379:6379
@@ -26,7 +28,8 @@ services:
             aliases:
               - redis
     mongo:
-        image: mongo:3.6
+        restart: always
+        image: mongo:4.2
         ports:
             - 27017:27017
         environment:
@@ -38,23 +41,26 @@ services:
             aliases:
               - mongo
     mysql:
-        image: mysql:5.5.47
-        ports:
-          - 3306:3306
-        volumes:
-          - /var/data/mysql:/var/lib/mysql
-        networks:
-          common:
-            aliases:
-              - mysql
-        environment:
-          - MYSQL_ROOT_PASSWORD=root
-          - MYSQL_USER=dev
-          - MYSQL_PASSWORD=dev
+      image:  mariadb/server:10.4
+      command: --default-authentication-plugin=mysql_native_password
+      restart: always
+      volumes:
+        - /var/data/mariadb:/var/lib/mysql
+      networks:
+        common:
+          aliases:
+            - mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_USER=dev
+        - MYSQL_PASSWORD=dev
     myadmin:
+      restart: always
       image: phpmyadmin/phpmyadmin:4.7
       environment:
-        - PMA_HOST=mysql
+        - PMA_HOSTS=mysql,10.18.2.3,10.16.14.4,10.16.25.1
+      volumes:
+        - /home/dev/config/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
       depends_on:
         - mysql
       ports:
@@ -62,6 +68,7 @@ services:
       networks:
         - common
     elastic:
+        restart: always
         build: ./docker/elastic
         ports:
             - 9200:9200
